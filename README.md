@@ -12,7 +12,7 @@
         }
         /* Custom styles for the hidden export template to match the image */
         #warranty-card-template {
-            width: 800px; /* Fixed width for consistent output */
+            width: 800px; /* Fixed width for consistent output resolution */
             border-collapse: collapse;
             font-size: 14px;
             font-family: Arial, sans-serif;
@@ -40,7 +40,7 @@
     </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
-    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl border border-gray-200">
+    <div class="bg-white p-8 rounded-2xl shadow-xl w-[90%] md:w-[75%] lg:w-[60%] border border-gray-200">
         <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">Warranty Card Creation</h1>
         <p class="text-center text-gray-500 mb-6">Fill out the form below to create your JPEG Warranty Card.</p>
         
@@ -227,18 +227,22 @@
                 </tr>
                 <tr>
                     <th style="width: 25%;">Sold By (Retailer)</th>
-                    <td id="template-retailer-name" class="data-cell"></td> <th style="width: 25%;">Choose an item.</th>
+                    <td id="template-retailer-name" class="data-cell"></td>
+                    <th style="width: 25%;">Choose an item.</th>
                     <td id="template-item" class="data-cell">N/A (Not Collected)</td>
                 </tr>
                 <tr>
                     <th>Address</th>
-                    <td id="template-retailer-address" class="data-cell" colspan="3">5000 W 95TH ST. STE 250</td> </tr>
+                    <td id="template-retailer-address" class="data-cell" colspan="3">5000 W 95TH ST. STE 250</td>
+                </tr>
                 <tr>
                     <th>City/State/Zip</th>
-                    <td id="template-retailer-zip" class="data-cell" colspan="3">PRAIRIE VILLAGE, KS 66207</td> </tr>
+                    <td id="template-retailer-zip" class="data-cell" colspan="3">PRAIRIE VILLAGE, KS 66207</td>
+                </tr>
                 <tr>
                     <th>Date of sale to Purchaser</th>
-                    <td id="template-sale-date" class="data-cell"></td> <th>Phone #</th>
+                    <td id="template-sale-date" class="data-cell"></td>
+                    <th>Phone #</th>
                     <td id="template-phone-1" class="data-cell"></td>
                 </tr>
                 <tr>
@@ -258,10 +262,12 @@
                 </tr>
                 <tr>
                     <th>Mailing address</th>
-                    <td id="template-mailing-address" class="data-cell" colspan="3"></td> </tr>
+                    <td id="template-mailing-address" class="data-cell" colspan="3"></td> 
+                </tr>
                 <tr>
                     <th>City/State/Zip</th>
-                    <td id="template-mailing-zip" class="data-cell" colspan="3"></td> </tr>
+                    <td id="template-mailing-zip" class="data-cell" colspan="3"></td> 
+                </tr>
                 <tr>
                     <th>Email</th>
                     <td id="template-email-1" class="data-cell" colspan="3"></td>
@@ -332,8 +338,7 @@
             const secondaryHomeownerFieldset = document.getElementById('secondary-homeowner-fieldset');
             const addSecondaryBtn = document.getElementById('add-secondary-btn');
             const warrantyCardTemplate = document.getElementById('warranty-card-template');
-            const mailingSameAsProperty = document.getElementById('mailing-same-as-property'); // NEW
-            const propertyAddressFieldset = document.querySelector('fieldset:nth-of-type(3)'); // Targeting property address fieldset
+            const mailingSameAsProperty = document.getElementById('mailing-same-as-property'); 
 
             // --- UI TOGGLE LOGIC ---
             addSecondaryBtn.addEventListener('click', () => {
@@ -346,23 +351,6 @@
                     document.getElementById('homeowner-phone-2').value = '';
                     document.getElementById('homeowner-email-2').value = '';
                 }
-            });
-
-            // Initial state for property address required fields
-            const propertyInputs = propertyAddressFieldset.querySelectorAll('input, select');
-            
-            // Function to handle mailing address checkbox
-            mailingSameAsProperty.addEventListener('change', (event) => {
-                const isChecked = event.target.checked;
-                
-                // If mailing is NOT the same, we'd need to add separate mailing address fields here.
-                // Since the prompt asks for an option and the template only has one set of mailing fields, 
-                // we'll assume the current Property Address fields are the ones used, 
-                // and the checkbox simply dictates which one is used for the "Mailing Address" section of the card (logic handled in submit function).
-                // For a more robust solution, the form would need a separate Mailing Address fieldset that is un-hidden here.
-                
-                // Since the current behavior is to just use the Property Address for the form's data flow:
-                // We will rely on the submit logic to decide which fields to use for the Mailing section of the generated card.
             });
             // --- END UI TOGGLE LOGIC ---
 
@@ -430,7 +418,7 @@
             // --- END CONTACT LOGIC ---
 
 
-            // *** NEW: FUNCTION TO FILL TEMPLATE AND EXPORT AS JPEG ***
+            // *** FUNCTION TO FILL TEMPLATE AND EXPORT AS JPEG ***
             document.getElementById('parts-form').addEventListener('submit', function(event) {
                 event.preventDefault();
 
@@ -447,8 +435,8 @@
 
                 // 1. COLLECT DATA
                 const data = {
-                    dateSold: form.elements['date-sold'].value, // NEW
-                    soldBy: form.elements['sold-by'].value, // NEW
+                    dateSold: form.elements['date-sold'].value,
+                    soldBy: form.elements['sold-by'].value,
                     manufacturer: form.elements['home-manufacturer'].value,
                     serial: form.elements['serial-number'].value,
                     community: communitySelect.value === 'Other' ? otherCommunityInput.value : communitySelect.value,
@@ -492,16 +480,14 @@
                 document.getElementById('template-property-address').textContent = fullPropertyAddress;
                 document.getElementById('template-property-zip').textContent = fullPropertyZip;
 
-                // Set Mailing Address (Uses Property Address fields, regardless of checkbox state, 
-                // as we don't have separate mailing fields, but if they were different, we would show 
-                // the separate fields here.)
+                // Set Mailing Address (Now uses the Property Address based on your final request)
                 document.getElementById('template-mailing-address').textContent = data.street;
                 document.getElementById('template-mailing-zip').textContent = `${data.community} ${data.state} ${data.zip}`;
                 
                 
                 // 3. RENDER HTML TO CANVAS AND DOWNLOAD
                 html2canvas(warrantyCardTemplate, {
-                    scale: 2, 
+                    scale: 2, // Higher resolution for better JPEG output
                     useCORS: true,
                     allowTaint: true
                 }).then(function(canvas) {
@@ -531,7 +517,6 @@
                     formMainContent.style.display = 'block';
                 });
             });
-            // *** END NEW FUNCTION ***
         })();
     </script>
 </body>
