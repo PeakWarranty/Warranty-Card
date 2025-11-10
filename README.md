@@ -37,6 +37,31 @@
             font-weight: bold;
             background-color: #ddd;
         }
+        /* New custom styles for template output */
+        .manufacturer-name-large { 
+            font-size: 1.15em; /* Approximately 15 font size increase from 14px base */
+            font-weight: bold;
+        }
+        .purchaser-column {
+            width: 35%; /* Decreased size for purchaser name */
+        }
+        .phone-column {
+            width: 15%; /* Allocated width for phone number */
+        }
+        .facility-header {
+            text-align: center;
+            font-weight: bold;
+            background-color: #ddd;
+        }
+        .facility-label {
+            width: 33.33%;
+            text-align: center;
+            font-weight: bold;
+        }
+        .facility-data {
+            text-align: center;
+            font-weight: normal;
+        }
     </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
@@ -245,12 +270,10 @@
             </thead>
             <tbody>
                 <tr class="header-row">
-                    <td colspan="4">For <span id="template-manufacturer-name"></span></td>
-                </tr>
+                    <td colspan="4"><span id="template-manufacturer-name" class="manufacturer-name-large"></span></td> </tr>
                 <tr>
                     <th style="width: 25%;">Sold By (Retailer)</th>
-                    <td id="template-retailer-name" class="data-cell"></td>
-                    <td colspan="2" class="data-cell"></td> </tr>
+                    <td id="template-retailer-name" class="data-cell" style="width: 75%;" colspan="3"></td> </tr>
                 <tr>
                     <th>Address</th>
                     <td id="template-retailer-address" class="data-cell" colspan="3">5000 W 95TH ST. STE 250</td>
@@ -261,21 +284,19 @@
                 </tr>
                 <tr>
                     <th>Date of sale to Purchaser</th>
-                    <td id="template-sale-date" class="data-cell"></td>
-                    <th style="width: 25%;"></th>
-                    <td class="data-cell"></td>
+                    <td id="template-sale-date" class="data-cell purchaser-column"></td> <td colspan="2" class="data-cell"></td>
+                </tr>
+                <tr>
+                    <th style="width: 25%;">Purchaser</th>
+                    <td id="template-purchaser-1" class="data-cell purchaser-column"></td> 
+                    <th class="phone-column">Phone #</th>
+                    <td id="template-phone-1" class="data-cell phone-column"></td>
                 </tr>
                 <tr>
                     <th>Purchaser</th>
-                    <td id="template-purchaser-1" class="data-cell"></td>
+                    <td id="template-purchaser-2" class="data-cell purchaser-column"></td>
                     <th>Phone #</th>
-                    <td id="template-phone-1" class="data-cell"></td>
-                </tr>
-                <tr>
-                    <th>Purchaser</th>
-                    <td id="template-purchaser-2" class="data-cell"></td>
-                    <th>Phone #</th>
-                    <td id="template-phone-2" class="data-cell"></td>
+                    <td id="template-phone-2" class="data-cell phone-column"></td>
                 </tr>
                 
                 <tr class="header-row">
@@ -307,24 +328,64 @@
                 </tr>
 
                 <tr class="header-row">
-                    <td colspan="4">To be filled out by Manufacturing Facility</td>
+                    <td colspan="4" class="facility-header">To be filled out by Manufacturing Facility</td>
                 </tr>
                 <tr>
-                    <th>Manufacture Date</th>
-                    <td class="data-cell"></td>
-                    <td colspan="2">Model: <span class="data-cell"></span></td>
+                    <td colspan="2" style="padding: 0;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr>
+                                <td colspan="3" style="text-align: center; border-left: none; border-top: none;">Manufacture Date</td>
+                            </tr>
+                            <tr>
+                                <td class="facility-data" style="width: 33%;">Month</td>
+                                <td class="facility-data" style="width: 33%;">Day</td>
+                                <td class="facility-data" style="width: 34%;">Year</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" style="border-top: none;"></td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td colspan="2" style="padding: 0;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr>
+                                <td style="text-align: center; border-left: none; border-top: none; border-right: none;">Model</td>
+                            </tr>
+                            <tr>
+                                <td style="border-top: none; border-right: none;"></td>
+                            </tr>
+                        </table>
+                    </td>
                 </tr>
                 <tr>
-                    <th>Design Wind Zone</th>
-                    <td class="data-cell">Zone I (PSF) ____ Zone II (PSF) ____ Zone III (PSF) ____</td>
-                    <td colspan="2">Design Roof Load: South (20 PSF) ____ South (30 PSF) ____ South (40 PSF) ____ Other ________ PSF</td>
+                    <td class="facility-label">SN</td>
+                    <td colspan="3"></td>
                 </tr>
                 <tr>
-                    <th>Design Roof Load</th>
-                    <td class="data-cell"></td>
-                    <td colspan="2">Climate Zone: Zone 1 ____ Zone 2 ____ Zone 3 ____</td>
+                    <td class="facility-label">Design Wind Zone</td>
+                    <td class="facility-label">Design Roof Load</td>
+                    <td class="facility-label" colspan="2">Climate Zone</td>
                 </tr>
-            </tbody>
+                <tr>
+                    <td class="facility-data">Zone I (PSF) ____</td>
+                    <td class="facility-data">South (20 PSF) ____</td>
+                    <td class="facility-data" colspan="2">Zone 1 ____</td>
+                </tr>
+                <tr>
+                    <td class="facility-data">Zone II (PSF) ____</td>
+                    <td class="facility-data">South (30 PSF) ____</td>
+                    <td class="facility-data" colspan="2">Zone 2 ____</td>
+                </tr>
+                <tr>
+                    <td class="facility-data">Zone III (PSF) ____</td>
+                    <td class="facility-data">South (40 PSF) ____</td>
+                    <td class="facility-data" colspan="2">Zone 3 ____</td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="facility-data"></td>
+                    <td colspan="2" class="facility-data">Other ________ PSF</td>
+                </tr>
+                </tbody>
         </table>
     </div>
 
@@ -370,7 +431,6 @@
                 const isHidden = secondaryHomeownerFieldset.classList.toggle('hidden');
                 addSecondaryBtn.textContent = isHidden ? '+ Add Secondary Homeowner' : '- Remove Secondary Homeowner';
                 
-                // Clear fields when hiding
                 if (isHidden) {
                     document.getElementById('homeowner-name-2').value = '';
                     document.getElementById('homeowner-phone-2').value = '';
@@ -466,7 +526,7 @@
             document.getElementById('parts-form').addEventListener('submit', function(event) {
                 event.preventDefault();
 
-                // Validation check (includes conditional mailing address fields now)
+                // Validation check
                 if (!form.checkValidity()) {
                     return; 
                 }
@@ -501,6 +561,7 @@
                     phone2: form.elements['homeowner-phone-2'].value,
                     email2: form.elements['homeowner-email-2'].value,
                     submitter: form.elements['individual-name'].value,
+                    isMailingDifferent: mailingDifferentThanProperty.checked
                 };
 
                 // Prepare date for display (MM/DD/YYYY)
@@ -516,19 +577,19 @@
                 document.getElementById('template-purchaser-1').textContent = data.name1;
                 document.getElementById('template-phone-1').textContent = data.phone1;
 
-                document.getElementById('template-purchaser-2').textContent = data.name2 || ''; // Use empty string if N/A
-                document.getElementById('template-phone-2').textContent = data.phone2 || ''; // Use empty string if N/A
+                document.getElementById('template-purchaser-2').textContent = data.name2 || '';
+                document.getElementById('template-phone-2').textContent = data.phone2 || '';
                 
                 document.getElementById('template-serial-number').textContent = data.serial;
                 document.getElementById('template-email-1').textContent = data.email1;
 
-                // Set Mailing Address
-                document.getElementById('template-mailing-address').textContent = data.mStreet;
-                document.getElementById('template-mailing-zip').textContent = `${data.mState} ${data.mZip}`;
+                // Set Mailing Address (Street + Lot Number for the address line)
+                document.getElementById('template-mailing-address').textContent = `${data.mStreet} Lot ${data.lot}`;
+                document.getElementById('template-mailing-zip').textContent = `${data.community}, ${data.mState} ${data.mZip}`;
                 
                 // Set Property Address (Home Located at Below Address)
-                document.getElementById('template-property-address').textContent = `${data.pStreet} Lot ${data.lot}`; // Keep Lot number here
-                document.getElementById('template-property-zip').textContent = `${data.community}, ${data.pState} ${data.pZip}`; // Keep Community name here
+                document.getElementById('template-property-address').textContent = `${data.pStreet} Lot ${data.lot}`;
+                document.getElementById('template-property-zip').textContent = `${data.community}, ${data.pState} ${data.pZip}`;
                 
                 
                 // 3. RENDER HTML TO CANVAS AND DOWNLOAD
