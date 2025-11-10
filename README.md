@@ -15,9 +15,7 @@
 <body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
     <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl border border-gray-200">
         <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">Warranty Card</h1>
-        <p class="text-center text-gray-500 mb-6">Fill out the form below to submit your warranty card.
-            <br>
-        </p>
+        <p class="text-center text-gray-500 mb-6">Fill out the form below to submit your warranty card.</p>
         
         <form id="parts-form" class="space-y-4">
 
@@ -84,16 +82,24 @@
                 </div>
 
                 <div class="space-y-2">
-                    <label for="user-phone" class="block text-sm font-medium text-gray-700">Homeowner Phone Number</label> <input type="tel" id="user-phone" name="homeowner-phone-1" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+                    <label for="user-phone" class="block text-sm font-medium text-gray-700">Homeowner Phone Number</label>
+                    <input type="tel" id="user-phone" name="homeowner-phone-1" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
                 </div>
 
                 <div class="space-y-2">
-                    <label for="company-email" class="block text-sm font-medium text-gray-700">Homeowner Email</label> <input type="email" id="company-email" name="homeowner-email-1" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+                    <label for="company-email" class="block text-sm font-medium text-gray-700">Homeowner Email</label>
+                    <input type="email" id="company-email" name="homeowner-email-1" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
                 </div>
             </fieldset>
 
-            <fieldset class="border p-4 rounded-lg space-y-4">
-                <legend class="text-sm font-semibold text-gray-700 px-2">Homeowner Details (Secondary - Optional)</legend>
+            <div class="flex justify-end pt-2 pb-1">
+                <button type="button" id="add-secondary-btn" class="text-sm text-blue-600 hover:text-blue-800 font-medium transition duration-150 ease-in-out focus:outline-none">
+                    + Add Secondary Homeowner
+                </button>
+            </div>
+
+            <fieldset id="secondary-homeowner-fieldset" class="border p-4 rounded-lg space-y-4 hidden">
+                <legend class="text-sm font-semibold text-gray-700 px-2">Homeowner Details (Secondary)</legend>
 
                 <div class="space-y-2">
                     <label for="homeowner-name-2" class="block text-sm font-medium text-gray-700">Homeowner Name #2</label>
@@ -132,6 +138,7 @@
                     </div>
                 </div>
             </fieldset>
+            
             <div class="space-y-2">
                 <label for="individual-name" class="block text-sm font-medium text-gray-700">Individual Submitting Warranty Card</label>
                 <select id="individual-name" name="individual-name" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
@@ -164,7 +171,7 @@
             const TEMPLATE_ID = 'template_mumbvhg';
             const CONFIRMATION_TEMPLATE_ID = 'template_k6klnym';
 
-            // US State Codes (verified 50 states)
+            // US State Codes (50 states)
             const US_STATES = [
                 'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 
                 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 
@@ -181,9 +188,25 @@
             const submitBtn = document.getElementById('submit-btn');
             const formMainContent = document.querySelector('form');
             const individualNameSelect = document.getElementById('individual-name');
-            const homeownerPhone1Input = document.getElementById('user-phone'); // RENAMED REFERENCE
-            const homeownerEmail1Input = document.getElementById('company-email'); // RENAMED REFERENCE
+            const homeownerPhone1Input = document.getElementById('user-phone'); 
+            const homeownerEmail1Input = document.getElementById('company-email'); 
             const stateCodeSelect = document.getElementById('state-code');
+            const secondaryHomeownerFieldset = document.getElementById('secondary-homeowner-fieldset');
+            const addSecondaryBtn = document.getElementById('add-secondary-btn');
+
+            // --- UI TOGGLE LOGIC ---
+            addSecondaryBtn.addEventListener('click', () => {
+                const isHidden = secondaryHomeownerFieldset.classList.toggle('hidden');
+                addSecondaryBtn.textContent = isHidden ? '+ Add Secondary Homeowner' : '- Remove Secondary Homeowner';
+                
+                // Clear fields when hiding to prevent accidental data submission
+                if (isHidden) {
+                    document.getElementById('homeowner-name-2').value = '';
+                    document.getElementById('homeowner-phone-2').value = '';
+                    document.getElementById('homeowner-email-2').value = '';
+                }
+            });
+            // --- END UI TOGGLE LOGIC ---
 
             // Function to populate state dropdown
             function populateStates() {
@@ -202,6 +225,9 @@
                 otherCommunityInput.required = false;
                 otherCommunityInput.name = 'unused';
                 formMainContent.style.display = 'block';
+                // Reset secondary homeowner display
+                secondaryHomeownerFieldset.classList.add('hidden');
+                addSecondaryBtn.textContent = '+ Add Secondary Homeowner';
             }
 
             // Initialize: populate states
@@ -220,7 +246,7 @@
                 }
             });
 
-            // --- CONTACT LOGIC: Auto-fill now targets HOMEOWNER #1 fields ---
+            // --- CONTACT LOGIC: Auto-fill targets HOMEOWNER #1 fields ---
             const individualContacts = {
                 'Carl Thomas': { phone: '817-902-9543', email: '345hsllc@gmail.com' },
                 'Jerry Velasquez': { phone: '903-715-3217', email: 'jerryleevmhs@outlook.com' },
@@ -231,7 +257,6 @@
                 'Chris Brown': { phone: '512-777-0351', email: 'chris.brown@peakenterprises.com' }
             };
 
-            // Event listener to auto-populate Homeowner Phone #1 and Email #1 based on the Submitting INDIVIDUAL
             individualNameSelect.addEventListener('change', (event) => {
                 const selectedIndividual = event.target.value;
                 const contacts = individualContacts[selectedIndividual];
@@ -251,7 +276,6 @@
             document.getElementById('parts-form').addEventListener('submit', function(event) {
                 event.preventDefault();
                 
-                // Get email from the primary homeowner's email field
                 const primaryHomeownerEmail = form.elements['homeowner-email-1'].value.trim();
                 
                 if (!primaryHomeownerEmail) {
@@ -262,47 +286,58 @@
                     return; 
                 }
 
-                // Show loading state and hide the form
                 formMainContent.style.display = 'none';
                 statusDiv.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'bg-red-100', 'text-red-800');
                 statusDiv.classList.add('bg-blue-100', 'text-blue-800');
                 statusDiv.innerHTML = 'Sending request...';
-                
                 submitBtn.disabled = true;
                 
+                // --- DATA EXPORT SETUP (MATCHING IMAGE LAYOUT) ---
                 const orderRequestParams = {
-                    // Home Info
-                    'home-manufacturer': form.elements['home-manufacturer'].value,
-                    'community': communitySelect.value === 'Other' ? otherCommunityInput.value : communitySelect.value, 
-                    'lot-number': form.elements['lot-number'].value,
-                    'serial-number': form.elements['serial-number'].value,
-                    'occupancy': form.elements['occupancy'].value,
+                    // Top Section (Sold By / Retailer)
+                    'Sold By (Retailer)': 'N/A (Submitter Company was removed)', 
+                    'Retailer Address': 'N/A', 
+                    'Retailer City/State/Zip': 'N/A',
+                    'Date of sale to Purchaser': 'N/A', 
 
-                    // Homeowner #1 Details
-                    'homeowner-name-1': form.elements['homeowner-name'].value, // Renamed key to clarify primary
-                    'homeowner-phone-1': form.elements['homeowner-phone-1'].value,
-                    'homeowner-email-1': primaryHomeownerEmail,
-
-                    // Homeowner #2 Details (Optional)
-                    'homeowner-name-2': form.elements['homeowner-name-2'].value || 'N/A', // Send N/A if blank
-                    'homeowner-phone-2': form.elements['homeowner-phone-2'].value || 'N/A',
-                    'homeowner-email-2': form.elements['homeowner-email-2'].value || 'N/A',
+                    // Homeowner #1 Info (Primary Purchaser)
+                    'Purchaser Name 1': form.elements['homeowner-name'].value, 
+                    'Purchaser Phone 1': form.elements['homeowner-phone-1'].value,
+                    'Purchaser Email 1': form.elements['homeowner-email-1'].value,
                     
-                    // Property Address
-                    'street-address': form.elements['street-address'].value,
-                    'state-code': form.elements['state-code'].value,
-                    'zip-code': form.elements['zip-code'].value,
+                    // Homeowner #2 Info (Secondary Purchaser)
+                    'Purchaser Name 2': form.elements['homeowner-name-2'].value || 'N/A', 
+                    'Purchaser Phone 2': form.elements['homeowner-phone-2'].value || 'N/A',
+                    'Purchaser Email 2': form.elements['homeowner-email-2'].value || 'N/A',
 
-                    // Submitter Info
-                    'individual-name': form.elements['individual-name'].value,
+                    // SERIAL NUMBER & LOCATION INFO
+                    'SERIAL NUBER': form.elements['serial-number'].value,
+                    'Mailing address (Community)': communitySelect.value === 'Other' ? otherCommunityInput.value : communitySelect.value, 
+                    'Mailing City/State/Zip (Lot)': 'Lot: ' + form.elements['lot-number'].value,
+                    
+                    // Home located at below address (Property Address)
+                    'Address': form.elements['street-address'].value,
+                    'City/State/Zip': form.elements['state-code'].value + ' ' + form.elements['zip-code'].value,
+
+                    // To be filled out by Manufacturing Facility (N/A)
+                    'Manufacture Date': 'N/A',
+                    'Model': 'N/A',
+                    'Design Wind Zone': 'N/A',
+                    'Design Roof Load': 'N/A',
+                    'Climate Zone': 'N/A',
+                    
+                    // Additional Data (for your internal use, placed at the end)
+                    'Home Manufacturer': form.elements['home-manufacturer'].value,
+                    'Occupancy Status': form.elements['occupancy'].value,
+                    'Card Submitted By': form.elements['individual-name'].value,
                 };
                 
                 const confirmationParams = {
-                    'to_email': primaryHomeownerEmail, // Send confirmation to Homeowner #1
-                    
-                    // All other parameters remain the same for confirmation email content
+                    'to_email': primaryHomeownerEmail, 
                     ...orderRequestParams
                 };
+                // --- END DATA EXPORT SETUP ---
+
 
                 // First, send the Warranty Card submission
                 emailjs.send(SERVICE_ID, TEMPLATE_ID, orderRequestParams)
@@ -316,7 +351,6 @@
                         statusDiv.classList.add('bg-green-100', 'text-green-800');
                         statusDiv.innerHTML = '<strong>Success!</strong> Your Warranty Card has been sent, and a confirmation email has been sent to the primary homeowner\'s inbox. <br><br> <button id="continue-btn" class="py-2 px-4 bg-blue-600 hover:bg-blue-700 rounded-full text-white font-bold transition duration-150 ease-in-out">Continue</button>';
                         
-                        // Add event listener to the newly created button
                         document.getElementById('continue-btn').addEventListener('click', resetForm);
                     }, function(error) {
                         // Handle failure of either email and show the form again
