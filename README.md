@@ -37,17 +37,18 @@
             font-weight: bold;
             background-color: #ddd;
         }
-        /* New custom styles for template output */
+        /* Adjusted styles for template output */
         .manufacturer-name-large { 
-            font-size: 1.15em; 
+            font-size: 1.25em; /* Increased size for manufacturer name */
             font-weight: bold;
         }
-        /* Adjusted Purchaser/Phone layout */
-        .purchaser-column {
-            width: 25%; /* Reduced width */
+        /* Simplified Purchaser/Phone layout for merging cells */
+        .purchaser-name-cell {
+            width: 50%; 
+            border-right: none;
         }
-        .phone-column {
-            width: 25%; /* Increased width */
+        .purchaser-phone-cell {
+            width: 50%;
         }
         .facility-header {
             text-align: center;
@@ -66,7 +67,7 @@
     </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
-    <div class="bg-white p-8 rounded-2xl shadow-xl w-[90%] md:w-[75%] lg:w-[60%] border border-gray-200">
+    <div class="bg-white p-8 rounded-2xl shadow-xl w-[95%] md:w-[80%] lg:w-[70%] border border-gray-200">
         <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">Warranty Card Creation</h1>
         <p class="text-center text-gray-500 mb-6">Fill out the form below to create your JPEG Warranty Card.</p>
         
@@ -287,18 +288,18 @@
                 </tr>
                 <tr>
                     <th>Date of sale to Purchaser</th>
-                    <td id="template-sale-date" class="data-cell purchaser-column"></td>
-                    <td colspan="2" class="data-cell"></td>
+                    <td id="template-sale-date" class="data-cell purchaser-name-cell"></td>
+                    <td colspan="2" class="data-cell purchaser-phone-cell"></td>
                 </tr>
                 <tr>
                     <th style="width: 25%;">Purchaser</th>
-                    <td id="template-purchaser-1" class="data-cell purchaser-column"></td> 
+                    <td id="template-purchaser-1" class="data-cell purchaser-name-cell"></td> 
                     <th class="phone-column">Phone #</th>
                     <td id="template-phone-1" class="data-cell phone-column"></td>
                 </tr>
                 <tr>
                     <th>Purchaser</th>
-                    <td id="template-purchaser-2" class="data-cell purchaser-column"></td>
+                    <td id="template-purchaser-2" class="data-cell purchaser-name-cell"></td>
                     <th>Phone #</th>
                     <td id="template-phone-2" class="data-cell phone-column"></td>
                 </tr>
@@ -335,11 +336,16 @@
                     <td colspan="4" class="facility-header">To be filled out by Manufacturing Facility</td>
                 </tr>
                 <tr>
-                    <th colspan="2" style="width: 50%; text-align: center;">Manufactured Date</th> <th colspan="2" style="width: 50%; text-align: center;">Model</th> </tr>
+                    <th colspan="2" style="width: 50%; text-align: center;">Manufactured Date</th> 
+                    <th colspan="2" style="width: 50%; text-align: center;">Model</th> 
+                </tr>
                 <tr>
-                    <td colspan="2" style="border-top: none;"></td> <td colspan="2" style="border-top: none;"></td> </tr>
+                    <td colspan="2" style="border-top: none;"></td> 
+                    <td colspan="2" style="border-top: none;"></td> 
+                </tr>
                 <tr>
-                    <th class="facility-label">Serial Number</th> <td colspan="3"></td>
+                    <th class="facility-label">Serial Number</th> 
+                    <td colspan="3"></td>
                 </tr>
                 <tr>
                     <td class="facility-label">Design Wind Zone</td>
@@ -512,7 +518,7 @@
                 }
 
                 formMainContent.style.display = 'none';
-                statusDiv.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'bg-red-100', 'text-red-800');
+                statusDiv.classList.remove('bg-green-100', 'text-green-800', 'bg-red-100', 'text-red-800');
                 statusDiv.classList.add('bg-blue-100', 'text-blue-800');
                 statusDiv.innerHTML = 'Creating Warranty Card... Please wait.';
                 submitBtn.disabled = true;
