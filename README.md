@@ -161,13 +161,13 @@
             </fieldset>
 
             <div class="flex items-center space-x-2 pt-2 pb-4">
-                <input type="checkbox" id="mailing-same-as-property" checked class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                <label for="mailing-same-as-property" class="text-sm font-medium text-gray-700">
-                    Mailing Address is the same as Property Address
+                <input type="checkbox" id="mailing-different-than-property" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                <label for="mailing-different-than-property" class="text-sm font-medium text-gray-700">
+                    Mailing address is **different** than property address
                 </label>
             </div>
-
-            <fieldset class="border p-4 rounded-lg space-y-4">
+            
+            <fieldset id="property-address-fieldset" class="border p-4 rounded-lg space-y-4">
                 <legend class="text-sm font-semibold text-gray-700 px-2">Property Address</legend>
                 
                 <div class="space-y-2">
@@ -187,6 +187,28 @@
                     </div>
                 </div>
             </fieldset>
+
+            <fieldset id="mailing-address-fieldset" class="border p-4 rounded-lg space-y-4 hidden">
+                <legend class="text-sm font-semibold text-gray-700 px-2">Mailing Address</legend>
+                
+                <div class="space-y-2">
+                    <label for="mailing-street-address" class="block text-sm font-medium text-gray-700">Street Address</label>
+                    <input type="text" id="mailing-street-address" name="mailing-street-address" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+                </div>
+                
+                <div class="flex space-x-4">
+                    <div class="w-1/2 space-y-2">
+                        <label for="mailing-state-code" class="block text-sm font-medium text-gray-700">State</label>
+                        <select id="mailing-state-code" name="mailing-state-code" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+                            </select>
+                    </div>
+                    <div class="w-1/2 space-y-2">
+                        <label for="mailing-zip-code" class="block text-sm font-medium text-gray-700">ZIP Code</label>
+                        <input type="text" id="mailing-zip-code" name="mailing-zip-code" pattern="[0-9]{5}" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+                    </div>
+                </div>
+            </fieldset>
+
             
             <div class="space-y-2">
                 <label for="individual-name" class="block text-sm font-medium text-gray-700">Individual Submitting Warranty Card</label>
@@ -228,9 +250,7 @@
                 <tr>
                     <th style="width: 25%;">Sold By (Retailer)</th>
                     <td id="template-retailer-name" class="data-cell"></td>
-                    <th style="width: 25%;">Choose an item.</th>
-                    <td id="template-item" class="data-cell">N/A (Not Collected)</td>
-                </tr>
+                    <td colspan="2" class="data-cell"></td> </tr>
                 <tr>
                     <th>Address</th>
                     <td id="template-retailer-address" class="data-cell" colspan="3">5000 W 95TH ST. STE 250</td>
@@ -242,19 +262,20 @@
                 <tr>
                     <th>Date of sale to Purchaser</th>
                     <td id="template-sale-date" class="data-cell"></td>
-                    <th>Phone #</th>
-                    <td id="template-phone-1" class="data-cell"></td>
+                    <th style="width: 25%;"></th>
+                    <td class="data-cell"></td>
                 </tr>
                 <tr>
                     <th>Purchaser</th>
                     <td id="template-purchaser-1" class="data-cell"></td>
                     <th>Phone #</th>
-                    <td id="template-phone-2" class="data-cell"></td>
+                    <td id="template-phone-1" class="data-cell"></td>
                 </tr>
                 <tr>
                     <th>Purchaser</th>
                     <td id="template-purchaser-2" class="data-cell"></td>
-                    <td colspan="2"></td>
+                    <th>Phone #</th>
+                    <td id="template-phone-2" class="data-cell"></td>
                 </tr>
                 
                 <tr class="header-row">
@@ -338,7 +359,11 @@
             const secondaryHomeownerFieldset = document.getElementById('secondary-homeowner-fieldset');
             const addSecondaryBtn = document.getElementById('add-secondary-btn');
             const warrantyCardTemplate = document.getElementById('warranty-card-template');
-            const mailingSameAsProperty = document.getElementById('mailing-same-as-property'); 
+            
+            // NEW ADDRESS DOM REFERENCES
+            const mailingDifferentThanProperty = document.getElementById('mailing-different-than-property');
+            const mailingAddressFieldset = document.getElementById('mailing-address-fieldset');
+            const mailingStateSelect = document.getElementById('mailing-state-code');
 
             // --- UI TOGGLE LOGIC ---
             addSecondaryBtn.addEventListener('click', () => {
@@ -352,15 +377,28 @@
                     document.getElementById('homeowner-email-2').value = '';
                 }
             });
+
+            // Toggle logic for separate Mailing Address
+            mailingDifferentThanProperty.addEventListener('change', (event) => {
+                const isChecked = event.target.checked;
+                mailingAddressFieldset.classList.toggle('hidden', !isChecked);
+                
+                // Set required/non-required status on mailing fields
+                const mailingInputs = mailingAddressFieldset.querySelectorAll('input, select');
+                mailingInputs.forEach(input => {
+                    input.required = isChecked;
+                });
+            });
             // --- END UI TOGGLE LOGIC ---
 
-            // Function to populate state dropdown
+            // Function to populate state dropdowns
             function populateStates() {
                 let options = '<option value="" disabled selected>Select state</option>';
                 US_STATES.forEach(state => {
                     options += `<option value="${state}">${state}</option>`;
                 });
                 stateCodeSelect.innerHTML = options;
+                mailingStateSelect.innerHTML = options; // Populate the new mailing state dropdown
             }
 
             // Function to reset the entire form and show it again
@@ -373,7 +411,13 @@
                 formMainContent.style.display = 'block';
                 secondaryHomeownerFieldset.classList.add('hidden');
                 addSecondaryBtn.textContent = '+ Add Secondary Homeowner';
-                mailingSameAsProperty.checked = true; // Reset checkbox
+                mailingDifferentThanProperty.checked = false; // Reset checkbox
+                mailingAddressFieldset.classList.add('hidden'); // Hide mailing fields
+                
+                // Ensure mailing fields are not required after reset
+                mailingAddressFieldset.querySelectorAll('input, select').forEach(input => {
+                    input.required = false;
+                });
             }
 
             // Initialize: populate states
@@ -422,7 +466,7 @@
             document.getElementById('parts-form').addEventListener('submit', function(event) {
                 event.preventDefault();
 
-                // Validation check
+                // Validation check (includes conditional mailing address fields now)
                 if (!form.checkValidity()) {
                     return; 
                 }
@@ -441,9 +485,15 @@
                     serial: form.elements['serial-number'].value,
                     community: communitySelect.value === 'Other' ? otherCommunityInput.value : communitySelect.value,
                     lot: form.elements['lot-number'].value,
-                    street: form.elements['street-address'].value,
-                    state: form.elements['state-code'].value,
-                    zip: form.elements['zip-code'].value,
+                    // Property Address
+                    pStreet: form.elements['street-address'].value,
+                    pState: form.elements['state-code'].value,
+                    pZip: form.elements['zip-code'].value,
+                    // Mailing Address (Conditional)
+                    mStreet: mailingDifferentThanProperty.checked ? form.elements['mailing-street-address'].value : form.elements['street-address'].value,
+                    mState: mailingDifferentThanProperty.checked ? form.elements['mailing-state-code'].value : form.elements['state-code'].value,
+                    mZip: mailingDifferentThanProperty.checked ? form.elements['mailing-zip-code'].value : form.elements['zip-code'].value,
+                    // Homeowner Info
                     name1: form.elements['homeowner-name'].value,
                     phone1: form.elements['homeowner-phone-1'].value,
                     email1: form.elements['homeowner-email-1'].value,
@@ -451,7 +501,6 @@
                     phone2: form.elements['homeowner-phone-2'].value,
                     email2: form.elements['homeowner-email-2'].value,
                     submitter: form.elements['individual-name'].value,
-                    isMailingSame: mailingSameAsProperty.checked
                 };
 
                 // Prepare date for display (MM/DD/YYYY)
@@ -467,27 +516,24 @@
                 document.getElementById('template-purchaser-1').textContent = data.name1;
                 document.getElementById('template-phone-1').textContent = data.phone1;
 
-                // Handle secondary purchaser
-                document.getElementById('template-purchaser-2').textContent = data.name2 || 'N/A';
-                document.getElementById('template-phone-2').textContent = data.phone2 || 'N/A';
+                document.getElementById('template-purchaser-2').textContent = data.name2 || ''; // Use empty string if N/A
+                document.getElementById('template-phone-2').textContent = data.phone2 || ''; // Use empty string if N/A
                 
                 document.getElementById('template-serial-number').textContent = data.serial;
                 document.getElementById('template-email-1').textContent = data.email1;
 
+                // Set Mailing Address
+                document.getElementById('template-mailing-address').textContent = data.mStreet;
+                document.getElementById('template-mailing-zip').textContent = `${data.mState} ${data.mZip}`;
+                
                 // Set Property Address (Home Located at Below Address)
-                const fullPropertyAddress = `${data.street} Lot ${data.lot}`;
-                const fullPropertyZip = `${data.community}, ${data.state} ${data.zip}`;
-                document.getElementById('template-property-address').textContent = fullPropertyAddress;
-                document.getElementById('template-property-zip').textContent = fullPropertyZip;
-
-                // Set Mailing Address (Now uses the Property Address based on your final request)
-                document.getElementById('template-mailing-address').textContent = data.street;
-                document.getElementById('template-mailing-zip').textContent = `${data.community} ${data.state} ${data.zip}`;
+                document.getElementById('template-property-address').textContent = `${data.pStreet} Lot ${data.lot}`; // Keep Lot number here
+                document.getElementById('template-property-zip').textContent = `${data.community}, ${data.pState} ${data.pZip}`; // Keep Community name here
                 
                 
                 // 3. RENDER HTML TO CANVAS AND DOWNLOAD
                 html2canvas(warrantyCardTemplate, {
-                    scale: 2, // Higher resolution for better JPEG output
+                    scale: 2, 
                     useCORS: true,
                     allowTaint: true
                 }).then(function(canvas) {
