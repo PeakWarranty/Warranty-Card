@@ -39,14 +39,15 @@
         }
         /* New custom styles for template output */
         .manufacturer-name-large { 
-            font-size: 1.15em; /* Approximately 15 font size increase from 14px base */
+            font-size: 1.15em; 
             font-weight: bold;
         }
+        /* Adjusted Purchaser/Phone layout */
         .purchaser-column {
-            width: 35%; /* Decreased size for purchaser name */
+            width: 25%; /* Reduced width */
         }
         .phone-column {
-            width: 15%; /* Allocated width for phone number */
+            width: 25%; /* Increased width */
         }
         .facility-header {
             text-align: center;
@@ -270,10 +271,12 @@
             </thead>
             <tbody>
                 <tr class="header-row">
-                    <td colspan="4"><span id="template-manufacturer-name" class="manufacturer-name-large"></span></td> </tr>
+                    <td colspan="4"><span id="template-manufacturer-name" class="manufacturer-name-large"></span></td>
+                </tr>
                 <tr>
                     <th style="width: 25%;">Sold By (Retailer)</th>
-                    <td id="template-retailer-name" class="data-cell" style="width: 75%;" colspan="3"></td> </tr>
+                    <td id="template-retailer-name" class="data-cell" style="width: 75%;" colspan="3"></td>
+                </tr>
                 <tr>
                     <th>Address</th>
                     <td id="template-retailer-address" class="data-cell" colspan="3">5000 W 95TH ST. STE 250</td>
@@ -284,7 +287,8 @@
                 </tr>
                 <tr>
                     <th>Date of sale to Purchaser</th>
-                    <td id="template-sale-date" class="data-cell purchaser-column"></td> <td colspan="2" class="data-cell"></td>
+                    <td id="template-sale-date" class="data-cell purchaser-column"></td>
+                    <td colspan="2" class="data-cell"></td>
                 </tr>
                 <tr>
                     <th style="width: 25%;">Purchaser</th>
@@ -331,35 +335,11 @@
                     <td colspan="4" class="facility-header">To be filled out by Manufacturing Facility</td>
                 </tr>
                 <tr>
-                    <td colspan="2" style="padding: 0;">
-                        <table style="width: 100%; border-collapse: collapse;">
-                            <tr>
-                                <td colspan="3" style="text-align: center; border-left: none; border-top: none;">Manufacture Date</td>
-                            </tr>
-                            <tr>
-                                <td class="facility-data" style="width: 33%;">Month</td>
-                                <td class="facility-data" style="width: 33%;">Day</td>
-                                <td class="facility-data" style="width: 34%;">Year</td>
-                            </tr>
-                            <tr>
-                                <td colspan="3" style="border-top: none;"></td>
-                            </tr>
-                        </table>
-                    </td>
-                    <td colspan="2" style="padding: 0;">
-                        <table style="width: 100%; border-collapse: collapse;">
-                            <tr>
-                                <td style="text-align: center; border-left: none; border-top: none; border-right: none;">Model</td>
-                            </tr>
-                            <tr>
-                                <td style="border-top: none; border-right: none;"></td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
+                    <th colspan="2" style="width: 50%; text-align: center;">Manufactured Date</th> <th colspan="2" style="width: 50%; text-align: center;">Model</th> </tr>
                 <tr>
-                    <td class="facility-label">SN</td>
-                    <td colspan="3"></td>
+                    <td colspan="2" style="border-top: none;"></td> <td colspan="2" style="border-top: none;"></td> </tr>
+                <tr>
+                    <th class="facility-label">Serial Number</th> <td colspan="3"></td>
                 </tr>
                 <tr>
                     <td class="facility-label">Design Wind Zone</td>
@@ -583,7 +563,7 @@
                 document.getElementById('template-serial-number').textContent = data.serial;
                 document.getElementById('template-email-1').textContent = data.email1;
 
-                // Set Mailing Address (Street + Lot Number for the address line)
+                // Set Mailing Address
                 document.getElementById('template-mailing-address').textContent = `${data.mStreet} Lot ${data.lot}`;
                 document.getElementById('template-mailing-zip').textContent = `${data.community}, ${data.mState} ${data.mZip}`;
                 
