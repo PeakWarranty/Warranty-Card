@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Warranty Card Submission</title> <script src="https://cdn.tailwindcss.com"></script>
+    <title>Warranty Card Submission</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
         body {
@@ -13,7 +14,8 @@
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
     <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl border border-gray-200">
-        <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">Warranty Card</h1> <p class="text-center text-gray-500 mb-6">Fill out the form below to submit your warranty card.
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">Warranty Card</h1>
+        <p class="text-center text-gray-500 mb-6">Fill out the form below to submit your warranty card.
             <br>
         </p>
         
@@ -64,6 +66,26 @@
                 <input type="text" id="serial-number" name="serial-number" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
             </div>
 
+            <fieldset class="border p-4 rounded-lg space-y-4">
+                <legend class="text-sm font-semibold text-gray-700 px-2">Service Address (If different from Community)</legend>
+                
+                <div class="space-y-2">
+                    <label for="street-address" class="block text-sm font-medium text-gray-700">Street Address</label>
+                    <input type="text" id="street-address" name="street-address" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+                </div>
+                
+                <div class="flex space-x-4">
+                    <div class="w-1/2 space-y-2">
+                        <label for="state-code" class="block text-sm font-medium text-gray-700">State</label>
+                        <select id="state-code" name="state-code" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+                            </select>
+                    </div>
+                    <div class="w-1/2 space-y-2">
+                        <label for="zip-code" class="block text-sm font-medium text-gray-700">ZIP Code</label>
+                        <input type="text" id="zip-code" name="zip-code" pattern="[0-9]{5}" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+                    </div>
+                </div>
+            </fieldset>
             <div class="space-y-2">
                 <label for="occupancy" class="block text-sm font-medium text-gray-700">Occupancy</label>
                 <select id="occupancy" name="occupancy" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
@@ -76,17 +98,6 @@
             <div class="space-y-2">
                 <label for="homeowner-name" class="block text-sm font-medium text-gray-700">Homeowner Name</label>
                 <input type="text" id="homeowner-name" name="homeowner-name" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
-            </div>
-
-            <div class="space-y-2">
-                <label for="user-name" class="block text-sm font-medium text-gray-700">Company Name</label>
-                <select id="user-name" name="user-name" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
-                    <option value="" disabled selected>Select a company</option>
-                    <option value="345 Handyman Services">345 Handyman Services</option>
-                    <option value="G-Velasquez MHS">G-Velasquez MHS</option>
-                    <option value="Hand in Hand Carpentry">Hand in Hand Carpentry</option>
-                    <option value="Peak Enterprises">Peak Enterprises</option>
-                </select>
             </div>
 
             <div class="space-y-2">
@@ -128,8 +139,16 @@
             // Your EmailJS User ID, Service ID, and Template ID.
             const USER_ID = 'bSgwpRuVeEky48mPe'; 
             const SERVICE_ID = 'service_7lbsq24';
-            const TEMPLATE_ID = 'template_mumbvhg'; // Assuming this template will now be configured for Warranty Card data
+            const TEMPLATE_ID = 'template_mumbvhg';
             const CONFIRMATION_TEMPLATE_ID = 'template_k6klnym';
+
+            // US State Codes
+            const US_STATES = [
+                'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 
+                'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 
+                'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 
+                'WI', 'WY'
+            ];
 
             // DOM elements
             const form = document.getElementById('parts-form');
@@ -138,50 +157,48 @@
             const otherCommunityInput = document.getElementById('other-community');
             const statusDiv = document.getElementById('status-message');
             const submitBtn = document.getElementById('submit-btn');
-            // const removePartBtn = document.getElementById('remove-part-btn'); // REMOVED
-            // const partsContainer = document.getElementById('parts-container'); // REMOVED
-            // const addPartBtn = document.getElementById('add-part-btn'); // REMOVED
             const formMainContent = document.querySelector('form');
             const individualNameSelect = document.getElementById('individual-name');
             const userPhoneInput = document.getElementById('user-phone');
             const companyEmailInput = document.getElementById('company-email');
-            
-            // let partCounter = 0; // REMOVED
+            const stateCodeSelect = document.getElementById('state-code'); // NEW
 
-            // Define part locations (REMOVED)
-            // const partLocations = [...]; 
-            
-            // Function to update the disabled state of the remove button (REMOVED)
-            // function updateRemoveButtonState() { ... }
-            
-            // Function to add a new part entry (REMOVED)
-            // function addPartEntry() { ... }
-
-            // Function to remove the last part entry (REMOVED)
-            // function removePartEntry() { ... }
+            // Function to populate state dropdown (NEW)
+            function populateStates() {
+                let options = '<option value="" disabled selected>Select state</option>';
+                US_STATES.forEach(state => {
+                    options += `<option value="${state}">${state}</option>`;
+                });
+                stateCodeSelect.innerHTML = options;
+            }
 
             // Function to reset the entire form and show it again
             function resetForm() {
                 form.reset();
-                // partsContainer.innerHTML = ''; // REMOVED
-                // partCounter = 0; // REMOVED
-                // addPartEntry(); // REMOVED
                 statusDiv.classList.add('hidden');
                 otherCommunityDiv.classList.add('hidden');
                 otherCommunityInput.required = false;
                 otherCommunityInput.name = 'unused';
                 formMainContent.style.display = 'block';
-                // updateRemoveButtonState(); // REMOVED
             }
 
-            // Initially add the first part entry (REMOVED - no parts now)
-            // addPartEntry(); 
+            // Initialize: populate states
+            populateStates(); // NEW
 
-            // Event listeners (REMOVED PART BUTTON LISTENERS)
-            // addPartBtn.addEventListener('click', addPartEntry);
-            // removePartBtn.addEventListener('click', removePartEntry);
-            
-            // --- CONTACT LOGIC (Kept as is for auto-fill based on submitter) ---
+            // Handle "Other" option in community dropdown
+            communitySelect.addEventListener('change', (event) => {
+                if (event.target.value === 'Other') {
+                    otherCommunityDiv.classList.remove('hidden');
+                    otherCommunityInput.required = true;
+                    otherCommunityInput.name = 'home-address';
+                } else {
+                    otherCommunityDiv.classList.add('hidden');
+                    otherCommunityInput.required = false;
+                    otherCommunityInput.name = 'unused';
+                }
+            });
+
+            // --- CONTACT LOGIC (Still needed for auto-fill based on submitter) ---
             const individualContacts = {
                 'Carl Thomas': { phone: '817-902-9543', email: '345hsllc@gmail.com' },
                 'Jerry Velasquez': { phone: '903-715-3217', email: 'jerryleevmhs@outlook.com' },
@@ -207,19 +224,6 @@
             });
             // --- END CONTACT LOGIC ---
 
-            // Handle "Other" option in community dropdown
-            communitySelect.addEventListener('change', (event) => {
-                if (event.target.value === 'Other') {
-                    otherCommunityDiv.classList.remove('hidden');
-                    otherCommunityInput.required = true;
-                    otherCommunityInput.name = 'home-address';
-                } else {
-                    otherCommunityDiv.classList.add('hidden');
-                    otherCommunityInput.required = false;
-                    otherCommunityInput.name = 'unused';
-                }
-            });
-
             emailjs.init(USER_ID);
 
             document.getElementById('parts-form').addEventListener('submit', function(event) {
@@ -243,33 +247,40 @@
                 
                 submitBtn.disabled = true;
                 
-                // Parts data collection logic REMOVED - now only collecting form fields
-                
                 const orderRequestParams = {
-                    'user-name': form.elements['user-name'].value,
                     'company-email': companyEmail,
                     'user-phone': form.elements['user-phone'].value,
                     'individual-name': form.elements['individual-name'].value,
-                    'home-address': communitySelect.value === 'Other' ? otherCommunityInput.value : communitySelect.value,
+                    'community': communitySelect.value === 'Other' ? otherCommunityInput.value : communitySelect.value, // Renamed key to 'community' for clarity in email template
                     'lot-number': form.elements['lot-number'].value,
                     'serial-number': form.elements['serial-number'].value,
                     'home-manufacturer': form.elements['home-manufacturer'].value,
-                    'occupancy': form.elements['occupancy'].value, // NEW FIELD
-                    'homeowner-name': form.elements['homeowner-name'].value // NEW FIELD
+                    'occupancy': form.elements['occupancy'].value,
+                    'homeowner-name': form.elements['homeowner-name'].value,
+                    
+                    // NEW ADDRESS FIELDS
+                    'street-address': form.elements['street-address'].value,
+                    'state-code': form.elements['state-code'].value,
+                    'zip-code': form.elements['zip-code'].value,
+                    // 'user-name' (Company Name) is removed
                 };
                 
                 const confirmationParams = {
                     'to_email': companyEmail,
-                    'user-name': form.elements['user-name'].value,
                     'individual-name': form.elements['individual-name'].value,
                     'user-phone': form.elements['user-phone'].value,
                     'company-email': companyEmail,
-                    'home-address': communitySelect.value === 'Other' ? otherCommunityInput.value : communitySelect.value,
+                    'community': communitySelect.value === 'Other' ? otherCommunityInput.value : communitySelect.value, // Renamed key to 'community' for clarity in email template
                     'lot-number': form.elements['lot-number'].value,
                     'serial-number': form.elements['serial-number'].value,
                     'home-manufacturer': form.elements['home-manufacturer'].value,
-                    'occupancy': form.elements['occupancy'].value, // NEW FIELD
-                    'homeowner-name': form.elements['homeowner-name'].value // NEW FIELD
+                    'occupancy': form.elements['occupancy'].value,
+                    'homeowner-name': form.elements['homeowner-name'].value,
+                    
+                    // NEW ADDRESS FIELDS
+                    'street-address': form.elements['street-address'].value,
+                    'state-code': form.elements['state-code'].value,
+                    'zip-code': form.elements['zip-code'].value,
                 };
 
                 // First, send the order request (now a Warranty Card submission)
