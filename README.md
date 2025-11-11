@@ -39,16 +39,16 @@
         }
         /* Adjusted styles for template output */
         .manufacturer-name-large { 
-            font-size: 1.25em; /* Increased size for manufacturer name */
+            font-size: 1.25em; 
             font-weight: bold;
         }
         /* Simplified Purchaser/Phone layout for merging cells */
         .purchaser-name-cell {
-            width: 50%; 
+            width: 25%; 
             border-right: none;
         }
         .purchaser-phone-cell {
-            width: 50%;
+            width: 25%;
         }
         .facility-header {
             text-align: center;
@@ -67,7 +67,7 @@
     </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
-    <div class="bg-white p-8 rounded-2xl shadow-xl w-[95%] md:w-[80%] lg:w-[70%] border border-gray-200">
+    <div class="bg-white p-8 rounded-2xl shadow-xl w-[95%] md:w-[85%] lg:w-[80%] border border-gray-200">
         <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">Warranty Card Creation</h1>
         <p class="text-center text-gray-500 mb-6">Fill out the form below to create your JPEG Warranty Card.</p>
         
