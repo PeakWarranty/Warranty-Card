@@ -64,13 +64,15 @@
             text-align: center;
             font-weight: normal;
         }
+        .red-text {
+            color: red;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body class="bg-blue-900/5 flex items-center justify-center min-h-screen p-4">
     <div class="bg-white p-8 rounded-2xl shadow-xl w-[95%] md:w-[85%] lg:w-[90%] border border-gray-200">
-        <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">Warranty Card Creation</h1>
-        <p class="text-center text-gray-500 mb-6">Fill out the form below to create your JPEG Warranty Card.</p>
-        
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Warranty Card</h1>
         <form id="parts-form" class="space-y-4">
 
             <div class="space-y-2">
@@ -268,6 +270,11 @@
             </thead>
             <tbody>
                 <tr class="header-row">
+                    <td colspan="4" style="text-align: left; background-color: #fff; border-bottom: none;">
+                        <span id="template-submitted-by-line"></span>
+                    </td>
+                </tr>
+                <tr class="header-row">
                     <td colspan="4"><span id="template-manufacturer-name" class="manufacturer-name-large"></span></td>
                 </tr>
                 <tr>
@@ -284,8 +291,7 @@
                 </tr>
                 <tr>
                     <th>Date of Sale</th>
-                    <td id="template-sale-date" class="data-cell purchaser-name-cell"></td>
-                    <td colspan="2" class="data-cell purchaser-phone-cell"></td>
+                    <td id="template-sale-date" class="data-cell purchaser-name-cell red-text"></td> <td colspan="2" class="data-cell purchaser-phone-cell"></td>
                 </tr>
                 <tr>
                     <th style="width: 25%;">Purchaser</th>
@@ -301,8 +307,7 @@
                 </tr>
                 
                 <tr class="header-row">
-                    <td colspan="4">SERIAL NUBER: <span id="template-serial-number"></span></td>
-                </tr>
+                    <td colspan="4">SERIAL NUBER: <span id="template-serial-number" class="red-text"></span></td> </tr>
                 <tr>
                     <th>Mailing address</th>
                     <td id="template-mailing-address" class="data-cell" colspan="3"></td> 
@@ -413,10 +418,11 @@
             const propertyStateSelect = document.getElementById('state-code');
             const propertyZipInput = document.getElementById('zip-code');
 
-            // NEW: Occupancy display elements
+            // Occupancy display elements
             const occupancySelect = document.getElementById('occupancy');
             const occupancyDisplayContainer = document.getElementById('occupancy-display-container');
             const occupancyStatusDisplay = document.getElementById('occupancy-status-display');
+            const templateSubmittedByLine = document.getElementById('template-submitted-by-line');
 
 
             // --- UI TOGGLE AND DISPLAY LOGIC ---
@@ -452,6 +458,7 @@
                     occupancyStatusDisplay.textContent = `— ${status}`;
                     occupancyDisplayContainer.classList.remove('hidden');
                 } else {
+                    occupancyStatusDisplay.textContent = '';
                     occupancyDisplayContainer.classList.add('hidden');
                 }
             }
@@ -576,7 +583,7 @@
                     phone2: form.elements['homeowner-phone-2'].value,
                     email2: form.elements['homeowner-email-2'].value,
                     submitter: form.elements['individual-name'].value,
-                    occupancyStatus: form.elements['occupancy'].value // Added occupancy status
+                    occupancyStatus: form.elements['occupancy'].value
                 };
 
                 // Prepare date for display (MM/DD/YYYY)
@@ -584,9 +591,14 @@
                 
                 // 2. FILL HIDDEN TEMPLATE
                 document.getElementById('template-manufacturer-name').textContent = data.manufacturer;
+                
+                // NEW: Populate the top data line
+                templateSubmittedByLine.innerHTML = `Submitted By: ${data.submitter} &nbsp;&nbsp;&nbsp;&nbsp; Community: ${data.community} &nbsp;&nbsp;&nbsp;&nbsp; Occupancy: <span class="red-text">${data.occupancyStatus}</span>`;
+
                 document.getElementById('template-retailer-name').textContent = data.soldBy;
                 document.getElementById('template-retailer-address').textContent = RETAILER_ADDRESS.Street;
                 document.getElementById('template-retailer-zip').textContent = RETAILER_ADDRESS.CityStateZip;
+                
                 document.getElementById('template-sale-date').textContent = formattedDate;
 
                 document.getElementById('template-purchaser-1').textContent = data.name1;
