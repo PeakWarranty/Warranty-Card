@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Warranty Card</title>
+    <title>Warranty Card Creation</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
@@ -64,19 +64,12 @@
             text-align: center;
             font-weight: normal;
         }
-        .red-text {
-            color: red;
-        }
-        /* Increased height for manufacturing facility empty cells */
-        .manufacturer-date-model-spacing {
-            height: 30px; /* Adjust as needed */
-            padding: 15px 12px; /* Increased padding */
-        }
     </style>
 </head>
 <body class="bg-blue-900/5 flex items-center justify-center min-h-screen p-4">
     <div class="bg-white p-8 rounded-2xl shadow-xl w-[95%] md:w-[85%] lg:w-[90%] border border-gray-200">
-        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Warranty Card</h1>
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">Warranty Card Creation</h1>
+        <p class="text-center text-gray-500 mb-6">Fill out the form below to create your JPEG Warranty Card.</p>
         
         <form id="parts-form" class="space-y-4">
 
@@ -124,6 +117,10 @@
                     <option value="Solena">Solena</option>
                     <option value="Other">Other (Please specify)</option>
                 </select>
+            </div>
+            
+            <div id="occupancy-display-container" class="text-right mt-[-1rem] text-red-600 font-bold hidden">
+                <span id="occupancy-status-display" style="padding-right: 1.5rem;"></span>
             </div>
             
             <div id="other-community-div" class="space-y-2 hidden">
@@ -264,11 +261,6 @@
         <table id="warranty-card-template">
             <thead>
                 <tr>
-                    <td colspan="4" style="text-align: center; font-size: 1.1em; padding-bottom: 10px;">
-                        Submitted By: <span id="template-submitter-name"></span> - Community: <span id="template-community-name"></span>
-                    </td>
-                </tr>
-                <tr>
                     <td colspan="4" style="text-align: center; font-size: 1.5em; padding: 20px;">
                         Homeowner Information Card
                     </td>
@@ -292,7 +284,7 @@
                 </tr>
                 <tr>
                     <th>Date of Sale</th>
-                    <td id="template-sale-date" class="data-cell purchaser-name-cell red-text"></td>
+                    <td id="template-sale-date" class="data-cell purchaser-name-cell"></td>
                     <td colspan="2" class="data-cell purchaser-phone-cell"></td>
                 </tr>
                 <tr>
@@ -309,7 +301,7 @@
                 </tr>
                 
                 <tr class="header-row">
-                    <td colspan="4">SERIAL NUBER: <span id="template-serial-number" class="red-text"></span></td>
+                    <td colspan="4">SERIAL NUBER: <span id="template-serial-number"></span></td>
                 </tr>
                 <tr>
                     <th>Mailing address</th>
@@ -344,8 +336,8 @@
                     <th colspan="2" style="width: 50%; text-align: center;">Model</th> 
                 </tr>
                 <tr>
-                    <td colspan="2" class="manufacturer-date-model-spacing" style="border-top: none;"></td> 
-                    <td colspan="2" class="manufacturer-date-model-spacing" style="border-top: none;"></td> 
+                    <td colspan="2" style="border-top: none;"></td> 
+                    <td colspan="2" style="border-top: none;"></td> 
                 </tr>
                 <tr>
                     <th class="facility-label">Serial Number</th> 
@@ -421,13 +413,18 @@
             const propertyStateSelect = document.getElementById('state-code');
             const propertyZipInput = document.getElementById('zip-code');
 
+            // NEW: Occupancy display elements
+            const occupancySelect = document.getElementById('occupancy');
+            const occupancyDisplayContainer = document.getElementById('occupancy-display-container');
+            const occupancyStatusDisplay = document.getElementById('occupancy-status-display');
 
-            // --- UI TOGGLE LOGIC ---
+
+            // --- UI TOGGLE AND DISPLAY LOGIC ---
             
             function toggleMailingAddressFields() {
                 const isSame = mailingSameAsProperty.checked;
                 
-                // Show mailing fields if NOT the same (isSame = false)
+                // Toggle visibility
                 mailingAddressFieldset.classList.toggle('hidden', isSame);
                 
                 // Set required status based on visibility
@@ -448,6 +445,17 @@
                     mailingZipInput.value = '';
                 }
             }
+            
+            function updateOccupancyDisplay() {
+                const status = occupancySelect.value;
+                if (status && status !== 'Select occupancy status') {
+                    occupancyStatusDisplay.textContent = `— ${status}`;
+                    occupancyDisplayContainer.classList.remove('hidden');
+                } else {
+                    occupancyDisplayContainer.classList.add('hidden');
+                }
+            }
+
 
             // Event Listeners for UI interaction
             addSecondaryBtn.addEventListener('click', () => {
@@ -461,7 +469,7 @@
                 }
             });
 
-            // Initial and ongoing check for address similarity
+            // Mailing Address Listeners
             mailingSameAsProperty.addEventListener('change', toggleMailingAddressFields);
             propertyStreetInput.addEventListener('input', () => {
                 if (mailingSameAsProperty.checked) toggleMailingAddressFields();
@@ -473,7 +481,10 @@
                 if (mailingSameAsProperty.checked) toggleMailingAddressFields();
             });
             
-            // --- END UI TOGGLE LOGIC ---
+            // Occupancy Listener
+            occupancySelect.addEventListener('change', updateOccupancyDisplay);
+
+            // --- END UI TOGGLE AND DISPLAY LOGIC ---
 
             // Function to populate state dropdowns
             function populateStates() {
@@ -502,6 +513,9 @@
                 mailingAddressFieldset.querySelectorAll('input, select').forEach(input => {
                     input.required = false;
                 });
+                
+                // Reset occupancy display
+                occupancyDisplayContainer.classList.add('hidden');
             }
 
             // Initialize: populate states
@@ -538,7 +552,7 @@
                 statusDiv.innerHTML = 'Creating Warranty Card... Please wait.';
                 submitBtn.disabled = true;
 
-                // 1. COLLECT DATA (pulling from Property and Mailing fields)
+                // 1. COLLECT DATA
                 const data = {
                     dateSold: form.elements['date-sold'].value,
                     soldBy: form.elements['sold-by'].value,
@@ -550,7 +564,7 @@
                     pStreet: form.elements['street-address'].value,
                     pState: form.elements['state-code'].value,
                     pZip: form.elements['zip-code'].value,
-                    // Mailing Address (Always pulls from mailing fields, which are copied if box is checked)
+                    // Mailing Address (Pulled from mailing fields, which are copied if box is checked)
                     mStreet: form.elements['mailing-street-address'].value,
                     mState: form.elements['mailing-state-code'].value,
                     mZip: form.elements['mailing-zip-code'].value,
@@ -562,14 +576,13 @@
                     phone2: form.elements['homeowner-phone-2'].value,
                     email2: form.elements['homeowner-email-2'].value,
                     submitter: form.elements['individual-name'].value,
+                    occupancyStatus: form.elements['occupancy'].value // Added occupancy status
                 };
 
                 // Prepare date for display (MM/DD/YYYY)
                 const formattedDate = new Date(data.dateSold).toLocaleDateString('en-US');
                 
                 // 2. FILL HIDDEN TEMPLATE
-                document.getElementById('template-submitter-name').textContent = data.submitter;
-                document.getElementById('template-community-name').textContent = data.community;
                 document.getElementById('template-manufacturer-name').textContent = data.manufacturer;
                 document.getElementById('template-retailer-name').textContent = data.soldBy;
                 document.getElementById('template-retailer-address').textContent = RETAILER_ADDRESS.Street;
