@@ -66,7 +66,7 @@
         }
     </style>
 </head>
-<body class="bg-blue-900/10 flex items-center justify-center min-h-screen p-4">
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
     <div class="bg-white p-8 rounded-2xl shadow-xl w-[95%] md:w-[85%] lg:w-[80%] border border-gray-200">
         <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">Warranty Card Creation</h1>
         <p class="text-center text-gray-500 mb-6">Fill out the form below to create your JPEG Warranty Card.</p>
@@ -187,6 +187,13 @@
                 </div>
             </fieldset>
 
+            <div class="flex items-center space-x-2 pt-2 pb-4">
+                <input type="checkbox" id="mailing-different-than-property" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                <label for="mailing-different-than-property" class="text-sm font-medium text-gray-700">
+                    Mailing address is **different** than property address
+                </label>
+            </div>
+            
             <fieldset id="property-address-fieldset" class="border p-4 rounded-lg space-y-4">
                 <legend class="text-sm font-semibold text-gray-700 px-2">Property Address</legend>
                 
@@ -208,13 +215,6 @@
                 </div>
             </fieldset>
 
-            <div class="flex items-center space-x-2 pt-2 pb-4">
-                <input type="checkbox" id="mailing-different-than-property" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                <label for="mailing-different-than-property" class="text-sm font-medium text-gray-700">
-                    Mailing address is **different** than property address
-                </label>
-            </div>
-            
             <fieldset id="mailing-address-fieldset" class="border p-4 rounded-lg space-y-4 hidden">
                 <legend class="text-sm font-semibold text-gray-700 px-2">Mailing Address</legend>
                 
@@ -391,7 +391,7 @@
             const statusDiv = document.getElementById('status-message');
             const submitBtn = document.getElementById('submit-btn');
             const formMainContent = document.querySelector('form');
-            const individualNameInput = document.getElementById('individual-name'); // NOW A TEXT INPUT
+            const individualNameInput = document.getElementById('individual-name'); // CHANGED TO TEXT INPUT
             const homeownerPhone1Input = document.getElementById('user-phone'); 
             const homeownerEmail1Input = document.getElementById('company-email'); 
             const stateCodeSelect = document.getElementById('state-code');
@@ -473,6 +473,8 @@
                     otherCommunityInput.name = 'unused';
                 }
             });
+
+            // --- CONTACT LOGIC REMOVED: Since Individual Name is now a text input, auto-fill is disabled ---
             
             // *** FUNCTION TO FILL TEMPLATE AND EXPORT AS JPEG ***
             document.getElementById('parts-form').addEventListener('submit', function(event) {
@@ -512,7 +514,7 @@
                     name2: form.elements['homeowner-name-2'].value,
                     phone2: form.elements['homeowner-phone-2'].value,
                     email2: form.elements['homeowner-email-2'].value,
-                    submitter: individualNameInput.value, // NOW GET VALUE FROM TEXT INPUT
+                    submitter: form.elements['individual-name'].value,
                     isMailingDifferent: mailingDifferentThanProperty.checked
                 };
 
