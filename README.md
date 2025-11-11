@@ -66,7 +66,7 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+<body class="bg-blue-900/10 flex items-center justify-center min-h-screen p-4">
     <div class="bg-white p-8 rounded-2xl shadow-xl w-[95%] md:w-[85%] lg:w-[80%] border border-gray-200">
         <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">Warranty Card Creation</h1>
         <p class="text-center text-gray-500 mb-6">Fill out the form below to create your JPEG Warranty Card.</p>
@@ -74,7 +74,7 @@
         <form id="parts-form" class="space-y-4">
 
             <div class="space-y-2">
-                <label for="date-sold" class="block text-sm font-medium text-gray-700">Date of sale to Purchaser</label>
+                <label for="date-sold" class="block text-sm font-medium text-gray-700">Date of Sale</label>
                 <input type="date" id="date-sold" name="date-sold" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
             </div>
 
@@ -135,11 +135,11 @@
             </div>
 
             <div class="space-y-2">
-                <label for="occupancy" class="block text-sm font-medium text-gray-700">Occupancy</label>
+                <label for="occupancy" class="block text-sm font-medium text-gray-700">Occupancy Status</label>
                 <select id="occupancy" name="occupancy" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
                     <option value="" disabled selected>Select occupancy status</option>
-                    <option value="Homeowner">Homeowner</option>
-                    <option value="Renter">Renter</option>
+                    <option value="Own">Own</option>
+                    <option value="Rent">Rent</option>
                 </select>
             </div>
             
@@ -187,13 +187,6 @@
                 </div>
             </fieldset>
 
-            <div class="flex items-center space-x-2 pt-2 pb-4">
-                <input type="checkbox" id="mailing-different-than-property" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                <label for="mailing-different-than-property" class="text-sm font-medium text-gray-700">
-                    Mailing address is **different** than property address
-                </label>
-            </div>
-            
             <fieldset id="property-address-fieldset" class="border p-4 rounded-lg space-y-4">
                 <legend class="text-sm font-semibold text-gray-700 px-2">Property Address</legend>
                 
@@ -215,6 +208,13 @@
                 </div>
             </fieldset>
 
+            <div class="flex items-center space-x-2 pt-2 pb-4">
+                <input type="checkbox" id="mailing-different-than-property" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                <label for="mailing-different-than-property" class="text-sm font-medium text-gray-700">
+                    Mailing address is **different** than property address
+                </label>
+            </div>
+            
             <fieldset id="mailing-address-fieldset" class="border p-4 rounded-lg space-y-4 hidden">
                 <legend class="text-sm font-semibold text-gray-700 px-2">Mailing Address</legend>
                 
@@ -239,17 +239,9 @@
             
             <div class="space-y-2">
                 <label for="individual-name" class="block text-sm font-medium text-gray-700">Individual Submitting Warranty Card</label>
-                <select id="individual-name" name="individual-name" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
-                    <option value="" disabled selected>Select individual</option>
-                    <option value="Carl Thomas">Carl Thomas</option>
-                    <option value="Chris Brown">Chris Brown</option>
-                    <option value="Jason Cappers">Jason Cappers</option>
-                    <option value="Jeff Braswell">Jeff Braswell</option>
-                    <option value="Jerry Velasquez">Jerry Velasquez</option>
-                    <option value="Ray Howell">Ray Howell</option>
-                    <option value="Shawn Thomas">Shawn Thomas</option>
-                </select>
-            </div>
+                <input type="text" id="individual-name" name="individual-name" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+                
+                </div>
             
             <div class="mt-6">
                 <button type="submit" id="submit-btn" class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 rounded-full text-white font-bold text-lg transition duration-150 ease-in-out shadow-lg">
@@ -287,7 +279,7 @@
                     <td id="template-retailer-zip" class="data-cell" colspan="3">PRAIRIE VILLAGE, KS 66207</td>
                 </tr>
                 <tr>
-                    <th>Date of sale to Purchaser</th>
+                    <th>Date of Sale</th>
                     <td id="template-sale-date" class="data-cell purchaser-name-cell"></td>
                     <td colspan="2" class="data-cell purchaser-phone-cell"></td>
                 </tr>
@@ -399,7 +391,7 @@
             const statusDiv = document.getElementById('status-message');
             const submitBtn = document.getElementById('submit-btn');
             const formMainContent = document.querySelector('form');
-            const individualNameSelect = document.getElementById('individual-name');
+            const individualNameInput = document.getElementById('individual-name'); // NOW A TEXT INPUT
             const homeownerPhone1Input = document.getElementById('user-phone'); 
             const homeownerEmail1Input = document.getElementById('company-email'); 
             const stateCodeSelect = document.getElementById('state-code');
@@ -481,33 +473,7 @@
                     otherCommunityInput.name = 'unused';
                 }
             });
-
-            // --- CONTACT LOGIC: Auto-fill targets HOMEOWNER #1 fields ---
-            const individualContacts = {
-                'Carl Thomas': { phone: '817-902-9543', email: '345hsllc@gmail.com' },
-                'Jerry Velasquez': { phone: '903-715-3217', email: 'jerryleevmhs@outlook.com' },
-                'Ray Howell': { phone: '817-902-5404', email: 'big.eagle77@yahoo.com' },
-                'Shawn Thomas': { phone: '817-995-1818', email: 'shawn.thomas@peakmhc.com' },
-                'Jason Cappers': { phone: '318-540-9909', email: 'jason.cappers@peakenterprises.com' },
-                'Jeff Braswell': { phone: '940-594-2891', email: 'jeff.braswell@peakenterprises.com' },
-                'Chris Brown': { phone: '512-777-0351', email: 'chris.brown@peakenterprises.com' }
-            };
-
-            individualNameSelect.addEventListener('change', (event) => {
-                const selectedIndividual = event.target.value;
-                const contacts = individualContacts[selectedIndividual];
-                
-                if (contacts) {
-                    homeownerPhone1Input.value = contacts.phone;
-                    homeownerEmail1Input.value = contacts.email;
-                } else {
-                    homeownerPhone1Input.value = '';
-                    homeownerEmail1Input.value = '';
-                }
-            });
-            // --- END CONTACT LOGIC ---
-
-
+            
             // *** FUNCTION TO FILL TEMPLATE AND EXPORT AS JPEG ***
             document.getElementById('parts-form').addEventListener('submit', function(event) {
                 event.preventDefault();
@@ -546,7 +512,7 @@
                     name2: form.elements['homeowner-name-2'].value,
                     phone2: form.elements['homeowner-phone-2'].value,
                     email2: form.elements['homeowner-email-2'].value,
-                    submitter: form.elements['individual-name'].value,
+                    submitter: individualNameInput.value, // NOW GET VALUE FROM TEXT INPUT
                     isMailingDifferent: mailingDifferentThanProperty.checked
                 };
 
