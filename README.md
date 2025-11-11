@@ -66,8 +66,7 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
-    <div class="bg-white p-8 rounded-2xl shadow-xl w-[95%] md:w-[85%] lg:w-[80%] border border-gray-200">
+<body class="bg-blue-900/5 flex items-center justify-center min-h-screen p-4"> <div class="bg-white p-8 rounded-2xl shadow-xl w-[95%] md:w-[85%] lg:w-[90%] border border-gray-200">
         <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">Warranty Card Creation</h1>
         <p class="text-center text-gray-500 mb-6">Fill out the form below to create your JPEG Warranty Card.</p>
         
@@ -187,12 +186,6 @@
                 </div>
             </fieldset>
 
-            <div class="flex items-center space-x-2 pt-2 pb-4">
-                <input type="checkbox" id="mailing-different-than-property" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                <label for="mailing-different-than-property" class="text-sm font-medium text-gray-700">
-                    Mailing address is **different** than property address
-                </label>
-            </div>
             
             <fieldset id="property-address-fieldset" class="border p-4 rounded-lg space-y-4">
                 <legend class="text-sm font-semibold text-gray-700 px-2">Property Address</legend>
@@ -215,8 +208,15 @@
                 </div>
             </fieldset>
 
+            <div class="flex items-center space-x-2 pt-2 pb-4">
+                <input type="checkbox" id="mailing-same-as-property" checked class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                <label for="mailing-same-as-property" class="text-sm font-medium text-gray-700">
+                    Mailing address is the same as the property address
+                </label>
+            </div>
+            
             <fieldset id="mailing-address-fieldset" class="border p-4 rounded-lg space-y-4 hidden">
-                <legend class="text-sm font-semibold text-gray-700 px-2">Mailing Address</legend>
+                <legend class="text-sm font-semibold text-gray-700 px-2">Mailing Address (Different from Property)</legend>
                 
                 <div class="space-y-2">
                     <label for="mailing-street-address" class="block text-sm font-medium text-gray-700">Street Address</label>
@@ -240,8 +240,7 @@
             <div class="space-y-2">
                 <label for="individual-name" class="block text-sm font-medium text-gray-700">Individual Submitting Warranty Card</label>
                 <input type="text" id="individual-name" name="individual-name" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
-                
-                </div>
+            </div>
             
             <div class="mt-6">
                 <button type="submit" id="submit-btn" class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 rounded-full text-white font-bold text-lg transition duration-150 ease-in-out shadow-lg">
@@ -391,7 +390,7 @@
             const statusDiv = document.getElementById('status-message');
             const submitBtn = document.getElementById('submit-btn');
             const formMainContent = document.querySelector('form');
-            const individualNameInput = document.getElementById('individual-name'); // CHANGED TO TEXT INPUT
+            const individualNameInput = document.getElementById('individual-name');
             const homeownerPhone1Input = document.getElementById('user-phone'); 
             const homeownerEmail1Input = document.getElementById('company-email'); 
             const stateCodeSelect = document.getElementById('state-code');
@@ -399,12 +398,45 @@
             const addSecondaryBtn = document.getElementById('add-secondary-btn');
             const warrantyCardTemplate = document.getElementById('warranty-card-template');
             
-            // NEW ADDRESS DOM REFERENCES
-            const mailingDifferentThanProperty = document.getElementById('mailing-different-than-property');
+            // MAILING ADDRESS DOM REFERENCES
+            const mailingSameAsProperty = document.getElementById('mailing-same-as-property'); // CHECKBOX INVERTED
             const mailingAddressFieldset = document.getElementById('mailing-address-fieldset');
+            const mailingStreetInput = document.getElementById('mailing-street-address');
             const mailingStateSelect = document.getElementById('mailing-state-code');
+            const mailingZipInput = document.getElementById('mailing-zip-code');
+            const propertyStreetInput = document.getElementById('street-address');
+            const propertyStateSelect = document.getElementById('state-code');
+            const propertyZipInput = document.getElementById('zip-code');
+
 
             // --- UI TOGGLE LOGIC ---
+            
+            function toggleMailingAddressFields() {
+                const isSame = mailingSameAsProperty.checked;
+                
+                // Show mailing fields if NOT the same (isSame = false)
+                mailingAddressFieldset.classList.toggle('hidden', isSame);
+                
+                // Set required status based on visibility
+                const mailingInputs = mailingAddressFieldset.querySelectorAll('input, select');
+                mailingInputs.forEach(input => {
+                    input.required = !isSame;
+                });
+
+                // If address IS the same, copy Property Address values into Mailing Address fields (for data collection uniformity)
+                if (isSame) {
+                    mailingStreetInput.value = propertyStreetInput.value;
+                    mailingStateSelect.value = propertyStateSelect.value;
+                    mailingZipInput.value = propertyZipInput.value;
+                } else {
+                    // Clear the mailing fields if they are about to be shown (different address)
+                    mailingStreetInput.value = '';
+                    mailingStateSelect.value = '';
+                    mailingZipInput.value = '';
+                }
+            }
+
+            // Event Listeners for UI interaction
             addSecondaryBtn.addEventListener('click', () => {
                 const isHidden = secondaryHomeownerFieldset.classList.toggle('hidden');
                 addSecondaryBtn.textContent = isHidden ? '+ Add Secondary Homeowner' : '- Remove Secondary Homeowner';
@@ -416,17 +448,18 @@
                 }
             });
 
-            // Toggle logic for separate Mailing Address
-            mailingDifferentThanProperty.addEventListener('change', (event) => {
-                const isChecked = event.target.checked;
-                mailingAddressFieldset.classList.toggle('hidden', !isChecked);
-                
-                // Set required/non-required status on mailing fields
-                const mailingInputs = mailingAddressFieldset.querySelectorAll('input, select');
-                mailingInputs.forEach(input => {
-                    input.required = isChecked;
-                });
+            // Initial and ongoing check for address similarity
+            mailingSameAsProperty.addEventListener('change', toggleMailingAddressFields);
+            propertyStreetInput.addEventListener('input', () => {
+                if (mailingSameAsProperty.checked) toggleMailingAddressFields();
             });
+            propertyStateSelect.addEventListener('change', () => {
+                if (mailingSameAsProperty.checked) toggleMailingAddressFields();
+            });
+            propertyZipInput.addEventListener('input', () => {
+                if (mailingSameAsProperty.checked) toggleMailingAddressFields();
+            });
+            
             // --- END UI TOGGLE LOGIC ---
 
             // Function to populate state dropdowns
@@ -436,7 +469,7 @@
                     options += `<option value="${state}">${state}</option>`;
                 });
                 stateCodeSelect.innerHTML = options;
-                mailingStateSelect.innerHTML = options; // Populate the new mailing state dropdown
+                mailingStateSelect.innerHTML = options; 
             }
 
             // Function to reset the entire form and show it again
@@ -449,10 +482,10 @@
                 formMainContent.style.display = 'block';
                 secondaryHomeownerFieldset.classList.add('hidden');
                 addSecondaryBtn.textContent = '+ Add Secondary Homeowner';
-                mailingDifferentThanProperty.checked = false; // Reset checkbox
-                mailingAddressFieldset.classList.add('hidden'); // Hide mailing fields
                 
-                // Ensure mailing fields are not required after reset
+                // Reset mailing fields to default checked/hidden state
+                mailingSameAsProperty.checked = true;
+                mailingAddressFieldset.classList.add('hidden'); 
                 mailingAddressFieldset.querySelectorAll('input, select').forEach(input => {
                     input.required = false;
                 });
@@ -474,13 +507,14 @@
                 }
             });
 
-            // --- CONTACT LOGIC REMOVED: Since Individual Name is now a text input, auto-fill is disabled ---
-            
             // *** FUNCTION TO FILL TEMPLATE AND EXPORT AS JPEG ***
             document.getElementById('parts-form').addEventListener('submit', function(event) {
                 event.preventDefault();
 
-                // Validation check
+                // Ensure mailing address fields are correctly populated/validated based on checkbox status before final data pull
+                toggleMailingAddressFields(); 
+
+                // Final Validation check
                 if (!form.checkValidity()) {
                     return; 
                 }
@@ -491,7 +525,7 @@
                 statusDiv.innerHTML = 'Creating Warranty Card... Please wait.';
                 submitBtn.disabled = true;
 
-                // 1. COLLECT DATA
+                // 1. COLLECT DATA (pulling from Property and Mailing fields)
                 const data = {
                     dateSold: form.elements['date-sold'].value,
                     soldBy: form.elements['sold-by'].value,
@@ -503,10 +537,10 @@
                     pStreet: form.elements['street-address'].value,
                     pState: form.elements['state-code'].value,
                     pZip: form.elements['zip-code'].value,
-                    // Mailing Address (Conditional)
-                    mStreet: mailingDifferentThanProperty.checked ? form.elements['mailing-street-address'].value : form.elements['street-address'].value,
-                    mState: mailingDifferentThanProperty.checked ? form.elements['mailing-state-code'].value : form.elements['state-code'].value,
-                    mZip: mailingDifferentThanProperty.checked ? form.elements['mailing-zip-code'].value : form.elements['zip-code'].value,
+                    // Mailing Address (Always pulls from mailing fields, which are copied if box is checked)
+                    mStreet: form.elements['mailing-street-address'].value,
+                    mState: form.elements['mailing-state-code'].value,
+                    mZip: form.elements['mailing-zip-code'].value,
                     // Homeowner Info
                     name1: form.elements['homeowner-name'].value,
                     phone1: form.elements['homeowner-phone-1'].value,
@@ -515,7 +549,6 @@
                     phone2: form.elements['homeowner-phone-2'].value,
                     email2: form.elements['homeowner-email-2'].value,
                     submitter: form.elements['individual-name'].value,
-                    isMailingDifferent: mailingDifferentThanProperty.checked
                 };
 
                 // Prepare date for display (MM/DD/YYYY)
