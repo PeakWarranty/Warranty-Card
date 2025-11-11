@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Warranty Card Creation</title>
+    <title>Warranty Card</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
@@ -64,11 +64,19 @@
             text-align: center;
             font-weight: normal;
         }
+        .red-text {
+            color: red;
+        }
+        /* Increased height for manufacturing facility empty cells */
+        .manufacturer-date-model-spacing {
+            height: 30px; /* Adjust as needed */
+            padding: 15px 12px; /* Increased padding */
+        }
     </style>
 </head>
-<body class="bg-blue-900/5 flex items-center justify-center min-h-screen p-4"> <div class="bg-white p-8 rounded-2xl shadow-xl w-[95%] md:w-[85%] lg:w-[90%] border border-gray-200">
-        <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">Warranty Card Creation</h1>
-        <p class="text-center text-gray-500 mb-6">Fill out the form below to create your JPEG Warranty Card.</p>
+<body class="bg-blue-900/5 flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white p-8 rounded-2xl shadow-xl w-[95%] md:w-[85%] lg:w-[90%] border border-gray-200">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Warranty Card</h1>
         
         <form id="parts-form" class="space-y-4">
 
@@ -256,6 +264,11 @@
         <table id="warranty-card-template">
             <thead>
                 <tr>
+                    <td colspan="4" style="text-align: center; font-size: 1.1em; padding-bottom: 10px;">
+                        Submitted By: <span id="template-submitter-name"></span> - Community: <span id="template-community-name"></span>
+                    </td>
+                </tr>
+                <tr>
                     <td colspan="4" style="text-align: center; font-size: 1.5em; padding: 20px;">
                         Homeowner Information Card
                     </td>
@@ -279,7 +292,7 @@
                 </tr>
                 <tr>
                     <th>Date of Sale</th>
-                    <td id="template-sale-date" class="data-cell purchaser-name-cell"></td>
+                    <td id="template-sale-date" class="data-cell purchaser-name-cell red-text"></td>
                     <td colspan="2" class="data-cell purchaser-phone-cell"></td>
                 </tr>
                 <tr>
@@ -296,7 +309,7 @@
                 </tr>
                 
                 <tr class="header-row">
-                    <td colspan="4">SERIAL NUBER: <span id="template-serial-number"></span></td>
+                    <td colspan="4">SERIAL NUBER: <span id="template-serial-number" class="red-text"></span></td>
                 </tr>
                 <tr>
                     <th>Mailing address</th>
@@ -331,8 +344,8 @@
                     <th colspan="2" style="width: 50%; text-align: center;">Model</th> 
                 </tr>
                 <tr>
-                    <td colspan="2" style="border-top: none;"></td> 
-                    <td colspan="2" style="border-top: none;"></td> 
+                    <td colspan="2" class="manufacturer-date-model-spacing" style="border-top: none;"></td> 
+                    <td colspan="2" class="manufacturer-date-model-spacing" style="border-top: none;"></td> 
                 </tr>
                 <tr>
                     <th class="facility-label">Serial Number</th> 
@@ -399,7 +412,7 @@
             const warrantyCardTemplate = document.getElementById('warranty-card-template');
             
             // MAILING ADDRESS DOM REFERENCES
-            const mailingSameAsProperty = document.getElementById('mailing-same-as-property'); // CHECKBOX INVERTED
+            const mailingSameAsProperty = document.getElementById('mailing-same-as-property'); 
             const mailingAddressFieldset = document.getElementById('mailing-address-fieldset');
             const mailingStreetInput = document.getElementById('mailing-street-address');
             const mailingStateSelect = document.getElementById('mailing-state-code');
@@ -555,6 +568,8 @@
                 const formattedDate = new Date(data.dateSold).toLocaleDateString('en-US');
                 
                 // 2. FILL HIDDEN TEMPLATE
+                document.getElementById('template-submitter-name').textContent = data.submitter;
+                document.getElementById('template-community-name').textContent = data.community;
                 document.getElementById('template-manufacturer-name').textContent = data.manufacturer;
                 document.getElementById('template-retailer-name').textContent = data.soldBy;
                 document.getElementById('template-retailer-address').textContent = RETAILER_ADDRESS.Street;
